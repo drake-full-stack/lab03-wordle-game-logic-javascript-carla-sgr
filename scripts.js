@@ -68,14 +68,57 @@ document.addEventListener('DOMContentLoaded', function() {
 // ===== YOUR CHALLENGE: IMPLEMENT THESE FUNCTIONS =====
 
 // TODO: Add keyboard event listener
-// document.addEventListener("keydown", (event) => {
-//     // Your code here!
-// });
+document.addEventListener("keydown", (event) => {
+    const key = event.key.toUpperCase(); 
+    console.log("A key was pressed:", event.key);
+// This regex pattern matches exactly one letter, case-insensitive
+    if (/^[A-Z]$/.test(key)) {
+    console.log("It's a single letter!");
+    }
+
+// You can also check string length and compare to letters:
+    if (key.length === 1 && key >= 'A' && key <= 'Z') {
+    console.log("Valid letter!");
+    }
+//string comparison:
+    if (key === "BACKSPACE") {
+        console.log("Backspace pressed");
+    } else if (key === "ENTER") {
+        console.log("Enter pressed");
+        submitGuess(); 
+        } else if (/^[A-Z]$/.test(key)) {
+        addLetter(key); 
+    }
+    // TODO: Add your code here
+    // Hint: Check if game is over first
+    // Hint: Convert event.key to uppercase
+    // Hint: Handle three cases: BACKSPACE, ENTER, and letters A-Z
+    // Hint: Call the appropriate function for each case
+});
+
 
 // TODO: Implement addLetter function
-// function addLetter(letter) {
-//     // Your code here!
-// }
+function addLetter(letter) {
+    logDebug(`🎯 addLetter("${letter}") called`, 'info');
+    if (currentTile >= 5) {
+        logDebug("Row is full, can't add more letters");
+        return; // exit the function early
+    }
+    // Get the current row (remember: currentRow is a variable you have)
+    const rowElement = rows[currentRow]; // rows is an array of row elements
+    // Get all tiles in that row
+    const tiles = rowElement.querySelectorAll('.tile'); // returns an array-like list
+    // Get a specific tile by index
+    const tile = tiles[currentTile]; // gets the 3rd tile (index 2)
+    // Set text content
+    tile.textContent = letter;
+    tile.classList.add('filled'); // Add CSS classes
+    logDebug(`Added "${letter}" to position ${currentTile} (row ${currentRow})`, 'success');
+    
+    currentTile += 1;
+    logDebug(`Current word: ${getCurrentWord()}`, 'info');
+    
+}
 
 // TODO: Implement deleteLetter function  
 // function deleteLetter() {
