@@ -70,9 +70,9 @@ document.addEventListener('DOMContentLoaded', function() {
 // TODO: Add keyboard event listener
 document.addEventListener("keydown", (event) => {
     const key = event.key.toUpperCase(); 
-    console.log("A key was pressed:", event.key);
+    console.log("key pressed:", event.key);
 // This regex pattern matches exactly one letter, case-insensitive
-    if (/^[A-Z]$/.test(key)) {
+    if (/^[a-z]$/i.test(key)) {
     console.log("It's a single letter!");
     }
 
@@ -107,8 +107,13 @@ function addLetter(letter) {
     // Get a specific tile by index
     const tile = tiles[currentTile]; // gets the 3rd tile (index 2)
     // Set text content
-    tile.textContent = letter;
-    tile.classList.add('filled'); // Add CSS classes
+    tile.textContent = "A"; // puts the letter "A" in the tile
+
+    // Add CSS classes
+    tile.classList.add('filled'); // adds the 'filled' class for styling
+
+    // Remove CSS classes (you'll use this later)
+    tile.classList.remove('filled'); // removes the 'filled' class
 
     logDebug(`Added "${letter}" to position ${currentTile} (row ${currentRow})`, 'success'); 
     currentTile += 1;
@@ -159,9 +164,14 @@ function submitGuess() {
         guess += tile.textContent;
     });
 
+    logDebug(`Guess submitted: ${guess}`, 'info');
+    logDebug(`Target word: ${TARGET_WORD}`, 'info');
+    
+    checkGuess(guess, tiles);
+
     currentRow++;     // move to next row (0→1, 1→2, etc.)
     currentTile = 0;  // reset to start of new row
-    
+
     if (guess === TARGET_WORD) {
         gameOver = true; // player won!
         setTimeout(() => alert("Congratulations! You won!"), 500);
@@ -169,13 +179,40 @@ function submitGuess() {
         gameOver = true; // player used all 6 rows - game over
     }
 
-    logDebug(`Guess submitted: ${guess}`, 'info');
-    logDebug(`Target word: ${TARGET_WORD}`, 'info');
 }
 
 // TODO: Implement checkGuess function (the hardest part!)
-// function checkGuess(guess, tiles) {
-//     // Your code here!
-//     // Remember: handle duplicate letters correctly
-//     // Return the result array
-// }
+    function checkGuess(guess, tiles) {
+        logDebug(`🔍 Starting analysis for "${guess}"`, 'info');
+    
+    // TODO: Split TARGET_WORD and guess into arrays
+    const target = TARGET_WORD.split('');
+    const guessArray = guess.split('');
+    const result = ['absent', 'absent', 'absent', 'absent', 'absent'];
+    
+    // STEP 1: Find exact matches
+    for (let i = 0; i < 5; i++) {
+        if (guessArray[i] === TARGET_WORD[i]) {
+            result[i] = 'correct';
+            target[i] = null;
+            guessArray[i] = null;
+        }
+    }
+    
+    // STEP 2: Find wrong position matches  
+    for (let i = 0; i < 5; i++) {
+        if (guessArray[i] !== null) { // only check unused letters
+            const pos = target.indexOf(guessArray[i]);
+            if (pos !== -1) {
+                result[i] = 'present';
+                target[pos] = null;       // consume that target letter
+                guessArray[i] = null;     // consume this guess letter
+            }
+        }
+    }
+    for (let i = 0; i < 5; i++) {
+        tiles[i].classList.add(result[i]);  // "correct"/"present"/"absent"
+    }
+    return result;
+
+}
