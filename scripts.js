@@ -83,17 +83,13 @@ document.addEventListener("keydown", (event) => {
 //string comparison:
     if (key === "BACKSPACE") {
         console.log("Backspace pressed");
+        deleteLetter(); 
     } else if (key === "ENTER") {
         console.log("Enter pressed");
         submitGuess(); 
-        } else if (/^[A-Z]$/.test(key)) {
+    } else if (/^[A-Z]$/.test(key)) {
         addLetter(key); 
     }
-    // TODO: Add your code here
-    // Hint: Check if game is over first
-    // Hint: Convert event.key to uppercase
-    // Hint: Handle three cases: BACKSPACE, ENTER, and letters A-Z
-    // Hint: Call the appropriate function for each case
 });
 
 
@@ -113,17 +109,41 @@ function addLetter(letter) {
     // Set text content
     tile.textContent = letter;
     tile.classList.add('filled'); // Add CSS classes
-    logDebug(`Added "${letter}" to position ${currentTile} (row ${currentRow})`, 'success');
-    
+
+    logDebug(`Added "${letter}" to position ${currentTile} (row ${currentRow})`, 'success'); 
     currentTile += 1;
     logDebug(`Current word: ${getCurrentWord()}`, 'info');
     
 }
 
 // TODO: Implement deleteLetter function  
-// function deleteLetter() {
-//     // Your code here!
-// }
+function deleteLetter() {
+    logDebug(`🗑️ deleteLetter() called`, 'info');
+// Check if there are letters to delete
+    if (currentTile <= 0) {
+        logDebug("No letters in current row");
+        return;
+    }
+    // Move back one position FIRST, then clear that tile
+    currentTile--; // This decrements by 1 (same as currentTile = currentTile - 1)
+    // Now currentTile points to the tile we want to clear
+
+    const currentRowElement = rows[currentRow];
+    const tiles = currentRowElement.querySelectorAll('.tile');
+    const tile = tiles[currentTile]; // currentTile now points to the right tile
+
+    // Get the letter before deleting it (for logging)
+    const letter = tile.textContent;
+
+    // Clear the tile
+    tile.textContent = ''; // empty string removes the letter
+    tile.classList.remove('filled'); // remove the styling class
+
+    logDebug(`Delete "${letter}" from position ${currentTile} (row ${currentRow})`, 'success'); 
+    logDebug(`Current word: ${getCurrentWord()}`, 'info');
+    
+
+}
 
 // TODO: Implement submitGuess function
 // function submitGuess() {
